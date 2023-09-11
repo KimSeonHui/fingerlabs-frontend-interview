@@ -1,13 +1,13 @@
 import { Card, CardContent, CardMedia, Grid, Typography } from '@mui/material';
 import React from 'react';
 
-function NFTItem({ image, name }) {
+function NFTItem({ token }) {
 	return (
 		<Grid item xs={4}>
 			<Card>
-				<CardMedia component="img" image={image} />
+				<CardMedia component="img" image={token.image} />
 				<CardContent>
-					<Typography>{name}</Typography>
+					<Typography>{token.name}</Typography>
 				</CardContent>
 			</Card>
 		</Grid>
