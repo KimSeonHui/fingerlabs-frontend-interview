@@ -9,6 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 
 function App() {
 	const [tokens, setTokens] = useState([]);
+	const [backupTokens, setBackupTokens] = useState([]);
 	const [loading, setLoading] = useState(true);
 
 	const getTokens = async () => {
@@ -20,12 +21,22 @@ function App() {
 			resultsTokens.push(res.data);
 		}
 		setTokens(resultsTokens);
+		setBackupTokens(resultsTokens);
 		setLoading(false);
 	};
 
 	useEffect(() => {
 		getTokens();
 	}, []);
+
+	const search = (e) => {
+		if (e.target.value === '') {
+			setTokens(backupTokens);
+		} else {
+			const searchedTokens = backupTokens.filter((token) => token.name.includes(e.target.value));
+			setTokens(searchedTokens);
+		}
+	};
 
 	return (
 		<Container
@@ -80,6 +91,7 @@ function App() {
 								color: '#fff !important',
 							},
 						}}
+						onKeyUp={search}
 					/>
 					<Grid container spacing={2}>
 						{!loading
