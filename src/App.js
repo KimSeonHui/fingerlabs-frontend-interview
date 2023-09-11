@@ -4,20 +4,22 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { techaMiya } from './util/getMetadata';
 import NFTItem from './components/NFTItem/NFTItem';
+import NFTSkeleton from './components/NFTSkeleton/NFTSkeleton';
 
 function App() {
-	console.log(techaMiya);
 	const [tokens, setTokens] = useState([]);
+	const [loading, setLoading] = useState(true);
 
 	const getTokens = async () => {
 		const resultsTokens = [];
 
-		for (let i = 0; i < 30; i++) {
+		for (let i = 0; i < 100; i++) {
 			const url = await techaMiya.tokenURI(i);
 			const res = await axios.get(url);
 			resultsTokens.push(res.data);
 		}
 		setTokens(resultsTokens);
+		setLoading(false);
 	};
 
 	useEffect(() => {
@@ -49,9 +51,9 @@ function App() {
 				<Grid item xs={3}></Grid>
 				<Grid item xs={9}>
 					<Grid container spacing={2}>
-						{tokens.map((token, index) => (
-							<NFTItem key={index} image={token.image} name={token.name} />
-						))}
+						{!loading
+							? tokens.map((token, index) => <NFTItem key={index} token={token} />)
+							: Array.from(new Array(12)).map((data, index) => <NFTSkeleton key={index} />)}
 					</Grid>
 				</Grid>
 			</Grid>
