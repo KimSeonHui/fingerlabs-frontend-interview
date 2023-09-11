@@ -10,6 +10,7 @@ import SearchIcon from '@mui/icons-material/Search';
 function App() {
 	const [tokens, setTokens] = useState([]);
 	const [backupTokens, setBackupTokens] = useState([]);
+	const [inputValue, setInputValue] = useState('');
 	const [loading, setLoading] = useState(true);
 
 	const getTokens = async () => {
@@ -29,8 +30,13 @@ function App() {
 		getTokens();
 	}, []);
 
+	const handleChange = (e) => {
+		const value = e.target.value.replaceAll(/\D/g, '');
+		setInputValue(value);
+	};
+
 	const search = (e) => {
-		if (e.target.value === '') {
+		if (inputValue === '') {
 			setTokens(backupTokens);
 		} else {
 			const searchedTokens = backupTokens.filter((token) => token.name.includes(e.target.value));
@@ -75,6 +81,7 @@ function App() {
 						id="outlined-basic"
 						variant="outlined"
 						placeholder="토큰 번호를 입력해주세요"
+						value={inputValue}
 						InputProps={{
 							endAdornment: (
 								<InputAdornment position="end" sx={{ color: '#fff' }}>
@@ -91,6 +98,7 @@ function App() {
 								color: '#fff !important',
 							},
 						}}
+						onChange={handleChange}
 						onKeyUp={search}
 					/>
 					<Grid container spacing={2}>
