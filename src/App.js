@@ -1,5 +1,5 @@
 import { Box, Container, Grid, InputAdornment, TextField, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import axios from 'axios';
 import { techaMiya } from './util/getMetadata';
@@ -7,28 +7,41 @@ import NFTItem from './components/NFTItem/NFTItem';
 import NFTSkeleton from './components/NFTSkeleton/NFTSkeleton';
 import SearchIcon from '@mui/icons-material/Search';
 
+const MAX_PAGE = 100;
+const PAGE_SIZE = 30;
+
 function App() {
 	const [tokens, setTokens] = useState([]);
 	const [backupTokens, setBackupTokens] = useState([]);
 	const [inputValue, setInputValue] = useState('');
 	const [loading, setLoading] = useState(true);
+	const [start, setStart] = useState(0);
 
-	const getTokens = async () => {
+	const getTokens = async (start) => {
 		const resultsTokens = [];
+		let end = start + PAGE_SIZE;
 
-		for (let i = 0; i < 100; i++) {
+		if (MAX_PAGE <= start) {
+			return;
+		} else if (MAX_PAGE <= start + PAGE_SIZE) end = MAX_PAGE;
+
+		for (let i = start; i < end; i++) {
 			const url = await techaMiya.tokenURI(i);
 			const res = await axios.get(url);
 			resultsTokens.push(res.data);
 		}
-		setTokens(resultsTokens);
-		setBackupTokens(resultsTokens);
+		setTokens((prev) => prev.concat(resultsTokens));
+		setBackupTokens((prev) => prev.concat(resultsTokens));
 		setLoading(false);
 	};
 
 	useEffect(() => {
-		getTokens();
+		observer.observe(target.current);
 	}, []);
+
+	useEffect(() => {
+		getTokens(start);
+	}, [start]);
 
 	const handleChange = (e) => {
 		const value = e.target.value.replaceAll(/\D/g, '');
@@ -43,6 +56,20 @@ function App() {
 			setTokens(searchedTokens);
 		}
 	};
+
+	// 무한 스크롤
+	const target = useRef(null);
+
+	const callback = (entries) => {
+		const entry = entries[0];
+		if (entry.isIntersecting) {
+			setStart((prev) => prev + PAGE_SIZE);
+		}
+	};
+	const options = {
+		threshold: 1.0,
+	};
+	const observer = new IntersectionObserver(callback, options);
 
 	return (
 		<Container
@@ -105,6 +132,7 @@ function App() {
 						{!loading
 							? tokens.map((token, index) => <NFTItem key={index} token={token} />)
 							: Array.from(new Array(12)).map((data, index) => <NFTSkeleton key={index} />)}
+						<Box ref={target} sx={{ visibility: 'hidden' }}></Box>
 					</Grid>
 				</Grid>
 			</Grid>
