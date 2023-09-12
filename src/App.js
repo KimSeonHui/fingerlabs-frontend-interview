@@ -1,4 +1,12 @@
-import { Box, Container, Grid, InputAdornment, TextField, Typography } from '@mui/material';
+import {
+	Box,
+	Container,
+	Grid,
+	IconButton,
+	InputAdornment,
+	TextField,
+	Typography,
+} from '@mui/material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import axios from 'axios';
@@ -7,8 +15,8 @@ import NFTItem from './components/NFTItem/NFTItem';
 import NFTSkeleton from './components/NFTSkeleton/NFTSkeleton';
 import SearchIcon from '@mui/icons-material/Search';
 
-import data from './data/techmiya_traits.json';
 import Filter from './components/Filter/Filter';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 const MAX_PAGE = 1000;
 const PAGE_SIZE = 30;
@@ -89,6 +97,16 @@ function App() {
 	};
 	const observer = new IntersectionObserver(callback, options);
 
+	// top버튼
+	const toTop = () => {
+		if (window.scrollY !== 0) {
+			window.scrollTo({
+				top: 0,
+				behavior: 'smooth',
+			});
+		}
+	};
+
 	return (
 		<Container
 			sx={{
@@ -150,6 +168,23 @@ function App() {
 					</Grid>
 				</Grid>
 			</Grid>
+			<IconButton
+				sx={{
+					color: '#232323',
+					background: '#efefef',
+					position: 'fixed',
+					bottom: '20px',
+					right: '30px',
+					border: '1px solid #fff',
+					borderRadius: '50%',
+					':hover': {
+						color: '#fff',
+					},
+				}}
+				onClick={toTop}
+			>
+				<ArrowUpwardIcon />
+			</IconButton>
 		</Container>
 	);
 }
