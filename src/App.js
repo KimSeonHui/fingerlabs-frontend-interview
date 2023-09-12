@@ -77,14 +77,6 @@ function App() {
 				width: '100%',
 				height: '100%',
 				py: 4,
-				background: `linear-gradient(
-					to bottom,
-					#0c0931,
-					#1d1856,
-					#e80074,
-					#c200db,
-					#00cfe5
-				)`,
 			}}
 		>
 			<Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 6 }}>
