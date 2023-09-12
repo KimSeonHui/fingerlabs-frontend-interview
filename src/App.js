@@ -7,8 +7,26 @@ import NFTItem from './components/NFTItem/NFTItem';
 import NFTSkeleton from './components/NFTSkeleton/NFTSkeleton';
 import SearchIcon from '@mui/icons-material/Search';
 
+import data from './data/techmiya_traits.json';
+import Filter from './components/Filter/Filter';
+
 const MAX_PAGE = 1000;
 const PAGE_SIZE = 30;
+const names = [
+	'Background',
+	'Body',
+	'Dress',
+	'Earring',
+	'Eyes',
+	'Face',
+	'Gloves',
+	'Hair',
+	'Hand',
+	'Head',
+	'Mask',
+	'Weapon',
+	'Wing',
+];
 
 function App() {
 	const [tokens, setTokens] = useState([]);
@@ -85,10 +103,14 @@ function App() {
 				</Typography>
 			</Box>
 			<Grid container spacing={2} sx={{ width: '100%' }}>
-				<Grid item xs={3}></Grid>
+				<Grid item xs={4}>
+					{names.map((name, index) => (
+						<Filter key={index} name={name} />
+					))}
+				</Grid>
 				<Grid
 					item
-					xs={9}
+					xs={8}
 					sx={{
 						display: 'flex',
 						flexDirection: 'column',
