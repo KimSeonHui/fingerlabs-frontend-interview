@@ -7,7 +7,7 @@ import NFTItem from './components/NFTItem/NFTItem';
 import NFTSkeleton from './components/NFTSkeleton/NFTSkeleton';
 import SearchIcon from '@mui/icons-material/Search';
 
-const MAX_PAGE = 100;
+const MAX_PAGE = 1000;
 const PAGE_SIZE = 30;
 
 function App() {
@@ -131,7 +131,7 @@ function App() {
 					<Grid container spacing={2}>
 						{!loading
 							? tokens.map((token, index) => <NFTItem key={index} token={token} />)
-							: Array.from(new Array(12)).map((data, index) => <NFTSkeleton key={index} />)}
+							: Array.from(new Array(30)).map((data, index) => <NFTSkeleton key={index} />)}
 						<Box ref={target} sx={{ visibility: 'hidden' }}></Box>
 					</Grid>
 				</Grid>
