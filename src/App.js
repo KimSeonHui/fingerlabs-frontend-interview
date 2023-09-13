@@ -17,6 +17,7 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import Filter from './components/Filter/Filter';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded';
 
 const MAX_PAGE = 1000;
 const PAGE_SIZE = 30;
@@ -122,6 +123,10 @@ function App() {
 		}
 	}, [filter, tokens]);
 
+	const resetFilter = () => {
+		setFilter([]);
+	};
+
 	// top버튼
 	const toTop = () => {
 		if (window.scrollY !== 0) {
@@ -147,6 +152,20 @@ function App() {
 			</Box>
 			<Grid container spacing={2} sx={{ width: '100%' }} alignItems="start">
 				<Grid item xs={4}>
+					<Box
+						sx={{
+							display: 'flex',
+							justifyContent: 'space-between',
+							alignItems: 'center',
+							color: '#fff',
+							py: 2,
+						}}
+					>
+						<Typography variant="h6">Filter</Typography>
+						<IconButton sx={{ color: '#fff' }} onClick={resetFilter}>
+							<ReplayRoundedIcon />
+						</IconButton>
+					</Box>
 					{names.map((name, index) => (
 						<Filter key={index} name={name} filter={filter} setFilter={setFilter} />
 					))}
