@@ -6,7 +6,7 @@ import {
 	FormControlLabel,
 	Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import data from '../../data/techmiya_traits.json';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -24,6 +24,10 @@ function Filter({ name, filter, setFilter }) {
 			setFilter((prevFilter) => prevFilter.filter((item) => item.value !== value));
 		}
 	};
+
+	useEffect(() => {
+		if (filter.length === 0) setCheck([]);
+	}, [filter]);
 
 	return (
 		<Accordion sx={{ background: 'transparent', color: '#fff', border: '1px solid #36cacc' }}>
