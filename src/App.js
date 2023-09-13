@@ -39,8 +39,8 @@ const names = [
 
 function App() {
 	const [tokens, setTokens] = useState([]);
-	const [backupTokens, setBackupTokens] = useState([]);
 	const [filteredTokens, setFilteredTokens] = useState([]);
+	const [filterBackupTokens, setFilterBackupTokens] = useState([]);
 	const [filter, setFilter] = useState([]);
 	const [inputValue, setInputValue] = useState('');
 	const [loading, setLoading] = useState(true);
@@ -60,9 +60,7 @@ function App() {
 			resultsTokens.push(res.data);
 		}
 
-		console.log(resultsTokens);
 		setTokens((prev) => prev.concat(resultsTokens));
-		setBackupTokens((prev) => prev.concat(resultsTokens));
 		setLoading(false);
 	};
 
@@ -77,12 +75,15 @@ function App() {
 	};
 
 	const search = (e) => {
-		if (inputValue === '') {
-			setTokens(backupTokens);
+		const searchValue = e.target.value;
+		let updatedTokens = filterBackupTokens;
+
+		if (searchValue === '') {
+			setFilteredTokens(updatedTokens);
 		} else {
-			const searchedTokens = backupTokens.filter((token) => token.name.includes(e.target.value));
-			setTokens(searchedTokens);
+			updatedTokens = updatedTokens.filter((item) => item.name.includes(searchValue));
 		}
+		applyFilter(updatedTokens);
 	};
 
 	// 무한 스크롤
@@ -104,11 +105,12 @@ function App() {
 	const observer = new IntersectionObserver(callback, options);
 
 	// 필터
-	useEffect(() => {
+	const applyFilter = (tokensToFilter) => {
 		if (filter.length === 0) {
-			setFilteredTokens(backupTokens);
+			setFilteredTokens(tokensToFilter);
+			setFilterBackupTokens(tokensToFilter);
 		} else {
-			const newFilteredTokens = tokens.filter((token) => {
+			const newFilteredTokens = tokensToFilter.filter((token) => {
 				for (let f of filter) {
 					const matchedAtt = token.attributes.find((att) => {
 						return f.trait_type === att.trait_type && f.value === att.value;
@@ -121,6 +123,10 @@ function App() {
 
 			setFilteredTokens(newFilteredTokens);
 		}
+	};
+
+	useEffect(() => {
+		applyFilter(tokens);
 	}, [filter, tokens]);
 
 	const resetFilter = () => {
@@ -207,10 +213,6 @@ function App() {
 					<Grid container spacing={2}>
 						{loading && Array.from(new Array(30)).map((data, index) => <NFTSkeleton key={index} />)}
 						{!loading &&
-							filter.length === 0 &&
-							tokens.map((token, index) => <NFTItem key={index} token={token} />)}
-						{!loading &&
-							filter.length !== 0 &&
 							filteredTokens.map((token, index) => <NFTItem key={index} token={token} />)}
 						<Box ref={target} sx={{ visibility: 'hidden' }}></Box>
 					</Grid>
