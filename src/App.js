@@ -7,7 +7,7 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import axios from 'axios';
 import { techaMiya } from './util/getMetadata';
@@ -39,6 +39,8 @@ const names = [
 function App() {
 	const [tokens, setTokens] = useState([]);
 	const [backupTokens, setBackupTokens] = useState([]);
+	const [filteredTokens, setFilteredTokens] = useState([]);
+	const [filter, setFilter] = useState([]);
 	const [inputValue, setInputValue] = useState('');
 	const [loading, setLoading] = useState(true);
 	const [start, setStart] = useState(0);
@@ -56,19 +58,18 @@ function App() {
 			const res = await axios.get(url);
 			resultsTokens.push(res.data);
 		}
+
+		console.log(resultsTokens);
 		setTokens((prev) => prev.concat(resultsTokens));
 		setBackupTokens((prev) => prev.concat(resultsTokens));
 		setLoading(false);
 	};
 
 	useEffect(() => {
-		observer.observe(target.current);
-	}, []);
-
-	useEffect(() => {
 		getTokens(start);
 	}, [start]);
 
+	// 검색
 	const handleChange = (e) => {
 		const value = e.target.value.replaceAll(/\D/g, '');
 		setInputValue(value);
@@ -86,6 +87,10 @@ function App() {
 	// 무한 스크롤
 	const target = useRef(null);
 
+	useEffect(() => {
+		observer.observe(target.current);
+	}, []);
+
 	const callback = (entries) => {
 		const entry = entries[0];
 		if (entry.isIntersecting) {
@@ -96,6 +101,26 @@ function App() {
 		threshold: 1.0,
 	};
 	const observer = new IntersectionObserver(callback, options);
+
+	// 필터
+	useEffect(() => {
+		if (filter.length === 0) {
+			setFilteredTokens(backupTokens);
+		} else {
+			const newFilteredTokens = tokens.filter((token) => {
+				for (let f of filter) {
+					const matchedAtt = token.attributes.find((att) => {
+						return f.trait_type === att.trait_type && f.value === att.value;
+					});
+
+					if (!matchedAtt) return false;
+				}
+				return true;
+			});
+
+			setFilteredTokens(newFilteredTokens);
+		}
+	}, [filter, tokens]);
 
 	// top버튼
 	const toTop = () => {
@@ -120,10 +145,10 @@ function App() {
 					TECHA MIYA
 				</Typography>
 			</Box>
-			<Grid container spacing={2} sx={{ width: '100%' }}>
+			<Grid container spacing={2} sx={{ width: '100%' }} alignItems="start">
 				<Grid item xs={4}>
 					{names.map((name, index) => (
-						<Filter key={index} name={name} />
+						<Filter key={index} name={name} filter={filter} setFilter={setFilter} />
 					))}
 				</Grid>
 				<Grid
@@ -161,9 +186,13 @@ function App() {
 						onKeyUp={search}
 					/>
 					<Grid container spacing={2}>
-						{!loading
-							? tokens.map((token, index) => <NFTItem key={index} token={token} />)
-							: Array.from(new Array(30)).map((data, index) => <NFTSkeleton key={index} />)}
+						{loading && Array.from(new Array(30)).map((data, index) => <NFTSkeleton key={index} />)}
+						{!loading &&
+							filter.length === 0 &&
+							tokens.map((token, index) => <NFTItem key={index} token={token} />)}
+						{!loading &&
+							filter.length !== 0 &&
+							filteredTokens.map((token, index) => <NFTItem key={index} token={token} />)}
 						<Box ref={target} sx={{ visibility: 'hidden' }}></Box>
 					</Grid>
 				</Grid>
